@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# Build artifacts
+*.log
+*.out
+
+# Latex build files (important)
+*.aux
+*.log
+*.out
+*.toc
+*.pdf
+
+# Compiled LaTeX temp
+debug_resume.tex
+resume.pdf
+
+# Docker
+*.dockerignore
+
+# Environment variables
+.env
+.env.local

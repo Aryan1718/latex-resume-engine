@@ -1,0 +1,78 @@
+\documentclass[9.5pt,letterpaper]{article}
+\usepackage[top=0.35in,bottom=0.35in,left=0.4in,right=0.4in]{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+\pagestyle{empty}
+
+\setlength{\parskip}{0.25em}
+\setlength{\parindent}{0pt}
+\renewcommand{\baselinestretch}{1.01}
+\setlist[enumerate]{nosep,leftmargin=4.5mm,label=\textbullet,topsep=0.25em,itemsep=0.15em,parsep=0pt}
+\newcommand{\sect}[1]{\vspace{1mm}\textbf{\large #1}\vspace{0.4mm}\\\hrule\vspace{0.6mm}}
+
+\begin{document}
+
+% ========== HEADER ==========
+\begin{center}
+{\LARGE \textbf{ {{ header.name | latex_escape }} }}\\[-1pt]
+{{ header.phone | latex_escape }} \quad
+\href{mailto:{{ header.email | latex_escape }}}{ {{ header.email | latex_escape }} } \quad
+{%- if header.links.portfolio -%}
+\href{ {{ header.links.portfolio | latex_escape }} }{Portfolio} \quad
+{%- endif %}
+{%- if header.links.linkedin -%}
+\href{ {{ header.links.linkedin | latex_escape }} }{LinkedIn} \quad
+{%- endif %}
+{%- if header.links.github -%}
+\href{ {{ header.links.github | latex_escape }} }{GitHub}
+{%- endif %}
+\end{center}
+
+{{ summary | latex_escape }}
+
+% ========== EDUCATION ==========
+\sect{EDUCATION}
+{%- for ed in education %}
+\textbf{ {{ ed.school | latex_escape }} } \hfill {{ ed.startDate | latex_escape }} -- {{ ed.endDate | latex_escape }}\\
+{{ ed.degree | latex_escape }}
+{%- if ed.gpa %} \hfill GPA: \textbf{ {{ ed.gpa | latex_escape }} }{%- endif %}\\
+{%- endfor %}
+
+% ========== PROFESSIONAL EXPERIENCE ==========
+\sect{PROFESSIONAL EXPERIENCE}
+
+{%- for job in experience %}
+\textbf{ {{ job.title | latex_escape }}}, \textbf{ {{ job.company | latex_escape }} } 
+\hfill {{ job.startDate | latex_escape }} -- {{ job.endDate | latex_escape }}, {{ job.location | latex_escape }}
+\begin{enumerate}
+{%- for b in job.bullets %}
+  \item {{ b | latex_escape }}
+{%- endfor %}
+\end{enumerate}
+{%- endfor %}
+
+% ========== PROJECTS ==========
+\sect{PROJECTS}
+
+{%- for pr in projects %}
+\textbf{ {{ pr.name | latex_escape }} ({{ pr.stack | latex_escape }}) } \hfill {{ pr.year | latex_escape }}
+{%- if pr.link %}\\
+\href{ {{ pr.link | latex_escape }} }{ {{ pr.link | latex_escape }} }
+{%- endif %}
+\begin{enumerate}[leftmargin=4.5mm]
+{%- for b in pr.bullets %}
+  \item {{ b | latex_escape }}
+{%- endfor %}
+\end{enumerate}
+{%- endfor %}
+
+% ========== TECHNICAL SKILLS ==========
+\sect{TECHNICAL SKILLS}
+\textbf{Languages:} {{ skills.languages | join(', ') | latex_escape }}\\
+\textbf{Frameworks:} {{ skills.frameworks | join(', ') | latex_escape }}\\
+\textbf{Databases:} {{ skills.databases | join(', ') | latex_escape }}\\
+\textbf{Cloud \& Tools:} {{ skills.cloud | join(', ') | latex_escape }}\\
+\textbf{Concepts:} {{ skills.concepts | join(', ') | latex_escape }}\\
+
+\end{document}
