@@ -122,10 +122,3 @@ If the LaTeX compilation fails, inspect `debug_resume.tex` for the generated sou
 - Add unit tests that call `render_resume_to_pdf` with a minimal `Resume` and assert the returned bytes start with `%PDF`.
 - Provide a Docker image that includes `tectonic` so the runtime is consistent across environments.
 
-## License & attribution
-
-This repository is provided as-is. Add your preferred license if you intend to make it public.
-
----
-
-If you'd like, I can add a simple unit test and a small run script next — tell me which you'd prefer.
