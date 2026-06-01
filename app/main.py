@@ -1,5 +1,5 @@
 # app/main.py
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import Response
 from .models import LatexRenderRequest, RenderRequest
 from .latex_renderer import compile_latex_to_pdf, render_resume_to_pdf
@@ -26,6 +26,21 @@ async def render_resume(req: RenderRequest):
 async def render_latex(req: LatexRenderRequest):
     try:
         pdf_bytes = compile_latex_to_pdf(req.latex, debug_filename="debug_raw_latex.tex")
+        return Response(
+            content=pdf_bytes,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": 'attachment; filename="resume.pdf"'
+            },
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/render-latex-raw")
+async def render_latex_raw(latex: str = Body(..., media_type="text/plain")):
+    try:
+        pdf_bytes = compile_latex_to_pdf(latex, debug_filename="debug_raw_latex_body.tex")
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",

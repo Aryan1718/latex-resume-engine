@@ -6,6 +6,7 @@ This repository provides an HTTP API with two paths:
 
 - `POST /render-resume`: structured resume JSON -> LaTeX template -> PDF
 - `POST /render-latex`: raw LaTeX -> PDF
+- `POST /render-latex-raw`: raw `text/plain` LaTeX body -> PDF
 - `POST /render-tex-file`: uploaded `.tex` file -> PDF
 
 The service:
@@ -60,6 +61,76 @@ Development behavior:
 - `debug_resume.tex` and `debug_raw_latex.tex` are written into the repo root on your Windows filesystem
 
 ## API
+
+## Production Integration
+
+Live API base URL:
+
+```text
+https://latex-resume-engine.onrender.com
+```
+
+Recommended production flow:
+
+1. The frontend user clicks `Download PDF`.
+2. Your backend loads the full LaTeX document from the database.
+3. Your backend sends that LaTeX string to this renderer service.
+4. This service compiles the LaTeX and returns PDF bytes.
+5. Your backend streams that PDF back to the browser with a download response.
+
+Recommended endpoint:
+
+- `POST /render-latex-raw`
+
+Why this endpoint:
+
+- It accepts the full LaTeX content exactly as stored.
+- It avoids JSON escaping issues with backslashes.
+- It avoids temporary `.tex` file upload handling in your backend.
+- It returns `application/pdf` directly.
+
+Backend request contract:
+
+- URL: `https://latex-resume-engine.onrender.com/render-latex-raw`
+- Method: `POST`
+- Header: `Content-Type: text/plain`
+- Body: full LaTeX source from the database
+
+Expected response:
+
+- `200 OK`
+- `Content-Type: application/pdf`
+- Response body: PDF bytes
+
+Example backend fetch:
+
+```ts
+const latex = resume.latexSource;
+
+const response = await fetch("https://latex-resume-engine.onrender.com/render-latex-raw", {
+  method: "POST",
+  headers: {
+    "Content-Type": "text/plain",
+  },
+  body: latex,
+});
+
+if (!response.ok) {
+  throw new Error(`PDF render failed: ${response.status}`);
+}
+
+const pdfBuffer = Buffer.from(await response.arrayBuffer());
+```
+
+Recommended backend response to the browser:
+
+- `Content-Type: application/pdf`
+- `Content-Disposition: attachment; filename="resume.pdf"`
+
+Important architecture note:
+
+- The frontend should call your backend, not this renderer service directly.
+- Your backend should remain responsible for auth, database access, error handling, and returning the final download response.
 
 ### `POST /render-resume`
 
@@ -160,6 +231,21 @@ Error responses:
 - `500` for LaTeX rendering or compilation failures
 
 If compilation fails, inspect `debug_resume.tex` or `debug_raw_latex.tex` in the repo root.
+
+### `POST /render-latex-raw`
+
+Send the full LaTeX document as the raw request body with `Content-Type: text/plain`.
+
+Example:
+
+```bash
+curl -X POST "http://127.0.0.1:8000/render-latex-raw" \
+  -H "Content-Type: text/plain" \
+  --data-binary @resume.tex \
+  --output resume.pdf
+```
+
+This is the simplest integration when your backend already stores the full LaTeX string in a database.
 
 ### `POST /render-tex-file`
 
