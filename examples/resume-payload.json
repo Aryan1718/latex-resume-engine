@@ -1,0 +1,57 @@
+{
+  "resume": {
+    "header": {
+      "name": "Jane Developer",
+      "phone": "(555) 555-5555",
+      "email": "jane@example.com",
+      "location": "San Francisco, CA",
+      "links": {
+        "portfolio": "https://example.com",
+        "linkedin": "https://linkedin.com/in/jane",
+        "github": "https://github.com/jane"
+      }
+    },
+    "summary": "Backend engineer focused on Python services and document generation workflows.",
+    "education": [
+      {
+        "school": "State University",
+        "degree": "B.S. Computer Science",
+        "location": "California",
+        "startDate": "2016",
+        "endDate": "2020",
+        "gpa": "3.8/4.0"
+      }
+    ],
+    "experience": [
+      {
+        "title": "Software Engineer",
+        "company": "Acme Corp",
+        "location": "Remote",
+        "startDate": "2021",
+        "endDate": "Present",
+        "bullets": [
+          "Built internal APIs with FastAPI and Python.",
+          "Automated document generation pipelines for customer reports."
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "name": "Resume Engine",
+        "stack": "Python, FastAPI, LaTeX",
+        "year": "2026",
+        "bullets": [
+          "Rendered structured JSON into PDF resumes.",
+          "Integrated Tectonic for reproducible LaTeX compilation."
+        ]
+      }
+    ],
+    "skills": {
+      "languages": ["Python", "TypeScript"],
+      "frameworks": ["FastAPI", "React"],
+      "databases": ["PostgreSQL"],
+      "cloud": ["AWS", "Docker"],
+      "concepts": ["API design", "Testing", "Automation"]
+    }
+  }
+}

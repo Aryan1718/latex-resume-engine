@@ -53,3 +53,7 @@ class Resume(BaseModel):
 
 class RenderRequest(BaseModel):
     resume: Resume
+
+
+class LatexRenderRequest(BaseModel):
+    latex: str

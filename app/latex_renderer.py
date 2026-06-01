@@ -40,6 +40,44 @@ env = Environment(
 env.filters["latex_escape"] = latex_escape
 
 
+def compile_latex_to_pdf(latex_source: str, debug_filename: str = "debug_resume.tex") -> bytes:
+    """
+    Compile raw LaTeX source into PDF bytes using tectonic.
+    """
+    debug_path = os.path.join(os.getcwd(), debug_filename)
+    try:
+        with open(debug_path, "w", encoding="utf-8") as dbg:
+            dbg.write(latex_source)
+    except Exception:
+        pass
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tex_path = os.path.join(tmpdir, "resume.tex")
+        pdf_path = os.path.join(tmpdir, "resume.pdf")
+
+        with open(tex_path, "w", encoding="utf-8") as f:
+            f.write(latex_source)
+        print(f"LaTeX source written to {tex_path}")
+
+        cmd = ["tectonic", tex_path, "--outdir", tmpdir]
+        result = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"LaTeX compilation failed. "
+                f"Debug LaTeX saved to {debug_path}. "
+                f"LaTeX error: {result.stderr}"
+            )
+
+        with open(pdf_path, "rb") as f:
+            return f.read()
+
+
 def render_resume_to_pdf(resume: Resume) -> bytes:
     """
     1. Render LaTeX from template and Resume data.
@@ -56,45 +94,4 @@ def render_resume_to_pdf(resume: Resume) -> bytes:
         projects=resume.projects,
         skills=resume.skills,
     )
-
-    # Always save the latest generated LaTeX so you can inspect it
-    debug_path = os.path.join(os.getcwd(), "debug_resume.tex")
-    try:
-        with open(debug_path, "w", encoding="utf-8") as dbg:
-            dbg.write(latex_source)
-    except Exception:
-        # If writing debug file fails, we still want the main flow to continue.
-        pass
-
-    # Use a temp directory so we don't pollute the project
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tex_path = os.path.join(tmpdir, "resume.tex")
-        pdf_path = os.path.join(tmpdir, "resume.pdf")
-
-        # Write LaTeX source for compilation
-        with open(tex_path, "w", encoding="utf-8") as f:
-            f.write(latex_source)
-        print(f"LaTeX source written to {tex_path}")
-
-        # Run tectonic to compile .tex -> .pdf
-        cmd = ["tectonic", tex_path, "--outdir", tmpdir]
-        result = subprocess.run(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-
-        if result.returncode != 0:
-            # If compilation fails, you already have debug_resume.tex saved
-            raise RuntimeError(
-                f"LaTeX compilation failed. "
-                f"Debug LaTeX saved to {debug_path}. "
-                f"LaTeX error: {result.stderr}"
-            )
-
-        # Read PDF bytes
-        with open(pdf_path, "rb") as f:
-            pdf_bytes = f.read()
-
-    return pdf_bytes
+    return compile_latex_to_pdf(latex_source, debug_filename="debug_resume.tex")

@@ -1,5 +1,8 @@
 FROM --platform=linux/amd64 python:3.12-slim
 
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 # Install basic tools + tectonic dependency libgraphite2-3
 RUN apt-get update && apt-get install -y \
     curl \
@@ -19,8 +22,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
+# Copy application code
 COPY app ./app
+COPY README.md ./README.md
 
 # Expose FastAPI port
 EXPOSE 8000
